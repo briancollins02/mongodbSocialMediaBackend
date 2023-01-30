@@ -1,5 +1,4 @@
 const User = require('./User');
-const Thought = require('./Thought');
-// Reaction will be a subdocument of the Thought model
+const Thought = require('./Thought.js');
 
 module.exports = { User, Thought };
