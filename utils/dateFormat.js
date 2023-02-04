@@ -8,4 +8,4 @@ function processDate(timestamp) {
 };
 
 
-module.exports = processDate(timestamp);
+module.exports = processDate();
