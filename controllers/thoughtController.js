@@ -4,16 +4,16 @@ module.exports = {
     // Get all thoughts
   getThoughts(req, res) {
     Thought.find({})
-      .then(async (users) => {
+      .then(async (thoughts) => {
         const thoughtObj = {
-          users,
+          thoughts,
         };
         return res.json(thoughtObj);
       })
       .catch((err) => {
         console.log(err);
         return res.status(500).json(err);
-      });
+      });  
   },
   // Get a single thought
   getSingleThought(req, res) {
@@ -30,11 +30,12 @@ module.exports = {
       });
   },
   // create a new thought
-  createrThought(req, res) {
+  createThought(req, res) {
     Thought.create(req.body)
         .then(({ _id }) => {
+          console.log(req.body);
             return User.findOneAndUpdate(
-                { _id: params.userId },
+                { _id: req.body.userId },
                 { $push: { thoughts: _id } },
                 { new: true }
             );
@@ -51,16 +52,20 @@ module.exports = {
   // Delete a thought
   deleteThought(req, res) {
     Thought.findOneAndDelete({ _id: req.params.thoughtId })
-      .then((deletedThought) =>
-        !deletedThought
-          ? res.status(404).json({ message: 'No such thought exists' })
+      .then(({ _id }) =>
+        !_id
+          ? res.status(404).json({ message: 'No thought with this ID' })
           : User.findOneAndUpdate(
-              { _id: req.params.username },
-              { $pull: { thoughts: req.params.thoughtId } },
-              { new: true }
-            )
+            { _id: req.body.userId },
+            { $pull: { thoughts: _id } },
+            { runValidators: true, new: true }
+          )
       )
       .then(userData => {
+        if (!userData) {
+          res.status(404).json({ message: 'No user with this ID' });
+          return;
+        }
         res.json(userData);
       })
       .catch((err) => {
@@ -71,10 +76,13 @@ module.exports = {
     // Update an existing User
     updateThought(req, res) {
         Thought.findOneAndUpdate(
-            { _id: req.params.userId },
+            { _id: req.params.thoughtId },
             { $set: req.body },
             { runValidators: true, new: true }
         )
+        .then(thoughtData => {
+          res.json(thoughtData);
+        })
         .catch((err) => res.status(500).json(err));
     },
 }
