@@ -70,4 +70,35 @@ module.exports = {
       )
         .catch((err) => res.status(500).json(err));
     },
+    // Add a Friend
+    addFriend(req, res) {
+        User.findOneAndUpdate(
+            { _id: req.params.userId},
+            { $push: { friends: req.params.friendId } },
+            { runValidators: true, new: true }
+        )
+        .then(userData => {
+            !userData
+            ? res.status(404).json({ message: 'No user with this ID' })
+            :res.json(userData);
+        })
+        .catch(err => res.json(err));
+    },
+    // Remove Friend
+    deleteFriend(req, res) {
+        User.findOneAndUpdate(
+          { _id: req.params.userId },
+          { $pull: {friends: req.params.friendId } },
+          { new: true }
+        )
+        .then(userData => {
+          !userData
+          ?  res.status(404).json({ message: 'No reaction with this ID' })
+          :  res.json(userData);
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).json(err);
+        });
+      }
 };
