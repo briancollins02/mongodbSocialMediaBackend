@@ -28,3 +28,6 @@ If you followed tutorials, include links to those here as well.
 ## License
 
 Refer to LICENSE.md
+
+## [Walkthough Video](https://youtu.be/D1-ZR7m1KwI)
+
